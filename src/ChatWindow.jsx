@@ -10,11 +10,13 @@ export default function ChatWindow() {
   const [connectionStatus, setConnectionStatus] = useState('checking')
   const messagesEndRef = useRef(null)
 
-  // Check Ollama connection on mount
+  // on mount check Ollama connection
   useEffect(() => {
     checkConnection()
   }, [])
 
+  // check the connection to Ollama and fetch available models
+  // then update connection status and model list accordingly
   const checkConnection = async () => {
     try {
       setConnectionStatus('checking')
@@ -33,14 +35,17 @@ export default function ChatWindow() {
     }
   }
 
+  // scroll to bottom whenever messages change
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
+  // scroll to bottom whenever messages change
   useEffect(() => {
     scrollToBottom()
   }, [messages])
 
+  // send a message to Ollama and handle the response
   const sendMessage = async (e) => {
     e.preventDefault()
     if (!input.trim()) return
@@ -50,6 +55,7 @@ export default function ChatWindow() {
     setInput('')
     setLoading(true)
 
+    // message are sent with a POST request to /api/chat endpoint
     try {
       console.log('Sending message to Ollama:', { model, message: input })
       const response = await fetch('http://localhost:11434/api/chat', {
@@ -94,7 +100,7 @@ export default function ChatWindow() {
     <div className="chat-window">
       <div className="chat-header">
         <div className="header-left">
-          <h2>service oder chat</h2>
+          <h2>service order assistance</h2>
           <div className={`connection-status ${connectionStatus}`}>
             <span className="status-dot"></span>
             {connectionStatus === 'checking' && 'Connecting...'}
