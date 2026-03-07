@@ -1,7 +1,7 @@
 ### Giovanni
 
 services:
-  rechat:
+  web:
     build: .
     ports:
       - "3000:80"    # host 3000 → container 80
