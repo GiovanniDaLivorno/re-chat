@@ -2,14 +2,11 @@
 
 Simple frontend to LLM for learning. Built using npm, Vite, React, Nginx, Docker, Ollama.
 
-## Quick Start
+## Development
 
-### Prerequisites
+0. **Prerequisites**
 - Node.js 20+
 - Docker & Docker Compose
-- Ollama (for LLM backend)
-
-### Development
 
 1. **Install dependencies**
    ```bash
@@ -25,6 +22,7 @@ Simple frontend to LLM for learning. Built using npm, Vite, React, Nginx, Docker
    ```
 
 3. **Start Ollama server**
+
    ```bash
    docker run -d -v ollama:/root/.ollama -p 11434:11434 --name molly ollama/ollama
    ```
@@ -38,9 +36,9 @@ Simple frontend to LLM for learning. Built using npm, Vite, React, Nginx, Docker
    if you have limited resources on your docker host use 
 
 
-### Production
+## Production
 
-#### Manual build
+### Manual build
 ```bash
 # Build app
 npm run build
@@ -58,7 +56,7 @@ docker run --rm -p 3000:80 rechat
 make docker-run
 ```
 
-#### Docker Compose build & run
+### Docker Compose build & run
 ```bash
 docker-compose up --build
 # or
@@ -67,8 +65,8 @@ make up
 
 ## Automation & CI/CD
 
-This project includes CI/CD pipelines for production artifact creation and Docker container builds.
-Note that only manual trigger is supported. add Push to main or master branches  pull request
+This project includes a CI/CD pipelines for production artifact creation and Docker container builds.
+Note that I have limited the pipeline to manual trigger only. add Push to main or master branches for full automation
 
 ### GitHub Actions Workflow
 
@@ -80,23 +78,10 @@ The `.github/workflows/ci-cd.yml` provides:
 
 ### Required Secrets
 
-For Docker Hub publishing, add these to your GitHub repository secrets:
+If you want to publish on Docker Hub, add these to your GitHub repository secrets:
 - `DOCKERHUB_USERNAME`: Your Docker Hub username
 - `DOCKERHUB_TOKEN`: Your Docker Hub access token
 
-### Local Automation
-
-Use the provided `Makefile` for common tasks:
-
-```bash
-make help          # Show all available commands
-make build         # Build production app
-make prod          # Full production build (app + Docker)
-make up            # Start with docker-compose
-make down          # Stop services
-make logs          # View logs
-make clean         # Clean up artifacts
-```
 
 ### CI/CD Flow
 
@@ -113,12 +98,23 @@ make clean         # Clean up artifacts
 - **Container**: Multi-stage Docker build for optimized images
 - **LLM**: Ollama API integration for local AI models
 
-## Development Commands
+## Useful commands
 
+Use the provided `Makefile` for common tasks:
+
+```bash
+make help          # Show all available commands
+make build         # Build production app
+make prod          # Full production build (app + Docker)
+make up            # Start with docker-compose
+make down          # Stop services
+make logs          # View logs
+make clean         # Clean up artifacts
+```
+or 
 ```bash
 npm run dev      # Development server
 npm run build    # Production build
 npm run lint     # Code linting
 npm run preview  # Preview production build
 ```
-

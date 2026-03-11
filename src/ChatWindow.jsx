@@ -117,7 +117,7 @@ export default function ChatWindow() {
     <div className="chat-window">
       <div className="chat-header">
         <div className="header-left">
-          <h2>CaaS services assistant</h2>
+          <h2>chat support</h2>
           <div className={`connection-status ${connectionStatus}`}>
             <span className="status-dot"></span>
             {connectionStatus === 'checking' && 'Connecting...'}
@@ -154,8 +154,8 @@ export default function ChatWindow() {
       <div className="messages-container">
         {messages.length === 0 ? (
           <div className="empty-state">
-            <p>what service do you want to use?</p>
-            <small>a service catalog is available at ...</small>
+            <p>what can I help you with?</p>
+            <small>services catalogue is available at ...</small>
           </div>
         ) : (
           messages.map((msg, idx) => (
