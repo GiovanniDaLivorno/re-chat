@@ -1,6 +1,12 @@
 import { useState, useRef, useEffect } from 'react'
 import './ChatWindow.css'
 
+// ChatWindow component is the main UI for the chat application
+// ollama need model is selected before messages.
+// API endpoint: http://localhost:11434/api/chat
+// openAI need authentication and model specification in the request body
+// API endpoint: https://api.openai.com/v1/chat/completions 
+
 export default function ChatWindow() {
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
@@ -8,6 +14,8 @@ export default function ChatWindow() {
   const [model, setModel] = useState('no model available')
   const [availableModels, setAvailableModels] = useState([])
   const [connectionStatus, setConnectionStatus] = useState('checking')
+  const [systemPrompt, setSystemPrompt] = useState('You are a helpful assistant.')
+  const [temperature, setTemperature] = useState(0.7)
   const messagesEndRef = useRef(null)
 
   // on mount check connection
@@ -72,9 +80,11 @@ export default function ChatWindow() {
     setInput('')
     setLoading(true)
 
-    // message are sent with a POST request to /api/chat endpoint
+    // messages are sent with a POST request to /api/chat endpoint
+    // if system prompt is not null or empty, it is added as 1st message with role "system"
     try {
       console.log('Sending message to Ollama:', { model, message: input })
+      const messagesToSend = systemPrompt.trim() ? [{ role: 'system', content: systemPrompt }, ...messages, userMessage] : [...messages, userMessage]
       const response = await fetch('http://localhost:11434/api/chat', {
         method: 'POST',
         headers: {
@@ -82,8 +92,11 @@ export default function ChatWindow() {
         },
         body: JSON.stringify({
           model: model,
-          messages: [...messages, userMessage],
+          messages: messagesToSend,
           stream: false,
+          options: {
+            temperature: temperature
+          }
         }),
       })
 
@@ -149,6 +162,36 @@ export default function ChatWindow() {
             ↻
           </button>
         </div>
+      </div>
+
+      <div className="temperature-control">
+        <label htmlFor="temperature">Temperature: {temperature}</label>
+        <input
+          type="range"
+          id="temperature"
+          min="0"
+          max="2"
+          step="0.1"
+          value={temperature}
+          onChange={(e) => setTemperature(parseFloat(e.target.value))}
+          disabled={loading}
+        />
+        <div className="temperature-labels">
+          <span>Precise</span>
+          <span>Creative</span>
+        </div>
+      </div>
+
+      <div className="system-prompt">
+        <label htmlFor="systemPrompt">System Prompt:</label>
+        <textarea
+          id="systemPrompt"
+          value={systemPrompt}
+          onChange={(e) => setSystemPrompt(e.target.value)}
+          placeholder="Enter system prompt..."
+          disabled={loading}
+          rows={3}
+        />
       </div>
 
       <div className="messages-container">
