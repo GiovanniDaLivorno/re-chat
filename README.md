@@ -33,7 +33,6 @@ Simple frontend to LLM for learning. Built using npm, Vite, React, Nginx, Docker
    # your docker host, use small LLM, e.g.
    docker exec -it molly ollama pull qwen2.5-coder:0.5b
    ```
-   if you have limited resources on your docker host use 
 
 
 ## Production
@@ -66,7 +65,7 @@ make up
 ## Automation & CI/CD
 
 This project includes a CI/CD pipelines for production artifact creation and Docker container builds.
-Note that I have limited the pipeline to manual trigger only. add Push to main or master branches for full automation
+Note that I have limited the pipeline to manual trigger only. add Push to main/master branches for full automation.
 
 ### GitHub Actions Workflow
 

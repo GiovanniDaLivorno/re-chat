@@ -20,11 +20,11 @@ docker-build: ## Build Docker image
 	docker build -t rechat .
 
 docker-run: ## Run Docker container locally
-	docker run -p 3000:80 --name rechat-container rechat
+	docker run -p 3000:80 --rm --name re-chat rechat
 
 docker-stop: ## Stop and remove Docker container
-	docker stop rechat-container || true
-	docker rm rechat-container || true
+	docker stop re-chat || true
+	docker rm re-chat || true
 
 # Docker Compose commands
 up: ## Start services with docker-compose
