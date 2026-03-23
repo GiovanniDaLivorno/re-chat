@@ -28,16 +28,18 @@ docker-stop: ## Stop and remove Docker container
 
 # Docker Compose commands
 up: ## Start services with docker-compose
-	docker-compose up -d
+	docker compose up -d
+	@echo "connect to http://localhost:3000 to access re-chat."
+	@echo "starting... Use 'make logs' to view logs."
 
 down: ## Stop services with docker-compose
-	docker-compose down
+	docker compose down
 
 logs: ## Show logs from docker-compose services
-	docker-compose logs -f
+	docker compose logs -f
 
 restart: ## Restart services
-	docker-compose restart
+	docker compose restart
 
 # Cleanup
 clean: ## Remove build artifacts and containers

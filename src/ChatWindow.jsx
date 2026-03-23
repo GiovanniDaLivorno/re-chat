@@ -2,10 +2,10 @@ import { useState, useRef, useEffect } from 'react'
 import './ChatWindow.css'
 
 // ChatWindow component is the main UI for the chat application
-// ollama need model is selected before messages.
+// ollama needs a model to be selected before sending messages.
 // API endpoint: http://localhost:11434/api/chat
-// openAI need authentication and model specification in the request body
-// API endpoint: https://api.openai.com/v1/chat/completions 
+// openAI needs authentication and model specification in the request body
+// API endpoint: https://api.openai.com/v1/chat/completions
 
 export default function ChatWindow() {
   const [messages, setMessages] = useState([])
