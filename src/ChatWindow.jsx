@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import './ChatWindow.css'
+import SettingsPanel from './SettingsPanel'
 
 // ChatWindow component is the main UI for the chat application
 // ollama needs a model to be selected before sending messages.
@@ -14,7 +15,7 @@ export default function ChatWindow() {
   const [model, setModel] = useState('no model available')
   const [availableModels, setAvailableModels] = useState([])
   const [connectionStatus, setConnectionStatus] = useState('checking')
-  const [systemPrompt, setSystemPrompt] = useState('You are a helpful assistant.')
+  const [systemPrompt, setSystemPrompt] = useState('')
   const [temperature, setTemperature] = useState(0.7)
   const messagesEndRef = useRef(null)
 
@@ -48,6 +49,13 @@ export default function ChatWindow() {
       console.error('Connection error:', error)
       setConnectionStatus('error')
     }
+  }
+
+  // clear the chat messages with confirmation
+  const handleClearChat = () => {
+    const confirmed = window.confirm('Clear the current conversation?')
+    if (!confirmed) return
+    setMessages([])
   }
 
   // scroll to bottom whenever messages change
@@ -130,7 +138,7 @@ export default function ChatWindow() {
     <div className="chat-window">
       <div className="chat-header">
         <div className="header-left">
-          <h2>chat support</h2>
+          <h2>re-chat</h2>
           <div className={`connection-status ${connectionStatus}`}>
             <span className="status-dot"></span>
             {connectionStatus === 'checking' && 'Connecting...'}
@@ -164,41 +172,19 @@ export default function ChatWindow() {
         </div>
       </div>
 
-      <div className="temperature-control">
-        <label htmlFor="temperature">Temperature: {temperature}</label>
-        <input
-          type="range"
-          id="temperature"
-          min="0"
-          max="2"
-          step="0.1"
-          value={temperature}
-          onChange={(e) => setTemperature(parseFloat(e.target.value))}
-          disabled={loading}
-        />
-        <div className="temperature-labels">
-          <span>Precise</span>
-          <span>Creative</span>
-        </div>
-      </div>
-
-      <div className="system-prompt">
-        <label htmlFor="systemPrompt">System Prompt:</label>
-        <textarea
-          id="systemPrompt"
-          value={systemPrompt}
-          onChange={(e) => setSystemPrompt(e.target.value)}
-          placeholder="Enter system prompt..."
-          disabled={loading}
-          rows={3}
-        />
-      </div>
+      <SettingsPanel
+        systemPrompt={systemPrompt}
+        setSystemPrompt={setSystemPrompt}
+        temperature={temperature}
+        setTemperature={setTemperature}
+        disabled={loading}
+      />
 
       <div className="messages-container">
         {messages.length === 0 ? (
           <div className="empty-state">
-            <p>what can I help you with?</p>
-            <small>services catalogue is available at ...</small>
+            <p>what can I do for you?</p>
+            <small>ask anything and have fun!</small>
           </div>
         ) : (
           messages.map((msg, idx) => (

@@ -1,0 +1,10 @@
+.system-prompt {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.system-prompt textarea {
+  width: 100%;
+  resize: vertical;
+}
