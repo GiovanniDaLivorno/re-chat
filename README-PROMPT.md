@@ -26,7 +26,7 @@ POST payload
       "content": "What's the weather like?"
     }
   ],
-  "stream": false,  // Set to true for streaming responses
+  "stream": true,  // Set to true for streaming responses
   "options": {
     "temperature": 0.7  // Controls creativity (0.0 = precise, 2.0 = creative)
   }

@@ -7,33 +7,35 @@ Simple frontend to LLM for learning. Built using npm, Vite, React, Nginx, Docker
 0. **Prerequisites**
 - Node.js 20+
 - Docker & Docker Compose
+- Make (only if you plan to use make commands)
 
 1. **Install dependencies**
    ```bash
    npm install
    ```
-   if `npm install` fnds critical vulnerabilities in the packages run `npm audit fix`
+   run `npm audit fix` if there are critical vulnerabilities
 
 2. **Start development server**
    ```bash
    npm run dev
-   # or
-   make dev
    ```
+   connect to ```http://localhost:5173/```
 
-3. **Start Ollama server**
+3. **configure an AI provider**
 
+   **local Ollama**
    ```bash
    docker run -d -v ollama:/root/.ollama -p 11434:11434 --name molly ollama/ollama
-   ```
-   load a model
-   ```bash
+   # then load a model
    docker exec -it molly ollama pull llama3:8b
    # if you have limited resources on
    # your docker host, use small LLM, e.g.
    docker exec -it molly ollama pull qwen2.5-coder:0.5b
    ```
-
+   **or your favorite AI provider**
+   ```
+   lore ipsum
+   ```
 
 ## Production
 
@@ -41,21 +43,20 @@ Simple frontend to LLM for learning. Built using npm, Vite, React, Nginx, Docker
 ```bash
 # Build app
 npm run build
-# or
-make build
 
 # Build Docker image
 docker build -t rechat .
-# or
-make docker-build
+
+### aubuild
+
 
 # Run the application
 docker run --rm -p 3000:80 rechat
 # or
-make docker-run
+make docker-start
 ```
 
-### Docker Compose build & run
+### Docker Compose build
 ```bash
 docker-compose up --build
 # or
@@ -99,21 +100,4 @@ If you want to publish on Docker Hub, add these to your GitHub repository secret
 
 ## Useful commands
 
-Use the provided `Makefile` for common tasks:
-
-```bash
-make help          # Show all available commands
-make build         # Build production app
-make prod          # Full production build (app + Docker)
-make up            # Start with docker-compose
-make down          # Stop services
-make logs          # View logs
-make clean         # Clean up artifacts
-```
-or 
-```bash
-npm run dev      # Development server
-npm run build    # Production build
-npm run lint     # Code linting
-npm run preview  # Preview production build
-```
+Use `make` command from project root

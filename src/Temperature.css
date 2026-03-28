@@ -1,3 +1,5 @@
+/* minimal styling for the temperature component */
+/* 
 .temperature-control {
   margin: 10px 0;
 }
@@ -11,4 +13,64 @@
   justify-content: space-between;
   font-size: 12px;
   opacity: 0.7;
+}
+ */
+
+ /* complete range input styling below */
+.temperature-control {
+  background: #fff;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.temperature-control label {
+  font-weight: 500;
+  color: #333;
+}
+
+.temperature-control input[type="range"] {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: #ddd;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.temperature-control input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #667eea;
+  cursor: pointer;
+}
+
+.temperature-control input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #667eea;
+  cursor: pointer;
+  border: none;
+}
+
+.temperature-control input[type="range"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.temperature-control input[type="range"]:disabled::-webkit-slider-thumb {
+  cursor: not-allowed;
+}
+
+.temperature-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #666;
 }

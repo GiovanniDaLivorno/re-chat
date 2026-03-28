@@ -11,16 +11,13 @@ help: ## Show this help message
 dev: ## Start development server with hot reload
 	npm run dev
 
-# Production build
-build: ## Build the application for production
+prod-build: ## Build production application and docker image
+	npm install
 	npm run build
+	docker build -t re-chat .
 
-# Docker commands
-docker-build: ## Build Docker image
-	docker build -t rechat .
-
-docker-run: ## Run Docker container locally
-	docker run -p 3000:80 --rm --name re-chat rechat
+docker-start: ## start Docker container locally
+	docker run -p 3000:80 --rm --name re-chat re-chat
 
 docker-stop: ## Stop and remove Docker container
 	docker stop re-chat || true
@@ -48,8 +45,8 @@ clean: ## Remove build artifacts and containers
 	docker compose down -v --remove-orphans
 	docker system prune -f
 
-# Full production build and deploy
-prod: build docker-build ## Build app and Docker image for production
+# Full production build
+prod: install build ## Build app and Docker image for production
 
 # Lint and test
 lint: ## Run ESLint
