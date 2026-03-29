@@ -1,5 +1,5 @@
 // ollamaProvider for local development with Ollama's API
-import { BaseProvider } from './baseProvider';
+import { BaseProvider } from './BaseProvider';
 
 export class OllamaProvider extends BaseProvider {
   baseUrl = 'http://localhost:11434';
@@ -24,6 +24,7 @@ export class OllamaProvider extends BaseProvider {
     }
 
     const data = await res.json();
-    return data.message.content;
+    return data;
+    // return data.message.content;
   }
 }

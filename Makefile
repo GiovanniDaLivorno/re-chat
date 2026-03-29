@@ -1,64 +1,90 @@
 # Makefile for ReChat
+# ===========================
+# Usage:
+#   make help             Show available commands
+#   make dev              Start frontend and backend in dev mode
+#   make build            Build frontend + backend Docker images
+#   make up               Start docker-compose services
+#   make down             Stop docker-compose services
+#   make logs             Tail docker-compose logs
+# ===========================
 
-.PHONY: help build up down logs clean dev prod
+.PHONY: help dev build up down logs clean lint test preview restart
 
-# Default target
+# ---------------------------------------
+# Help
+# ---------------------------------------
 help: ## Show this help message
 	@echo "Available commands:"
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-15s %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
+		| sort \
+		| awk 'BEGIN {FS = ":.*?## "}; {printf "  %-15s %s\n", $$1, $$2}'
 
+# ---------------------------------------
 # Development
-dev: ## Start development server with hot reload
-	npm run dev
+# ---------------------------------------
+dev: ## Run frontend + backend in development mode
+	@echo "Starting frontend and backend in dev mode..."
+	@echo "- Frontend (Vite React):"
+	cd frontend && npm install && npm run dev & \
+	FRONTEND_PID=$$!; \
+	echo "- Backend (FastAPI):" && \
+	cd backend && pip install -r requirements.txt && uvicorn main:app --reload & \
+	BACKEND_PID=$$!; \
+	wait $$FRONTEND_PID $$BACKEND_PID
 
-prod-build: ## Build production application and docker image
-	npm install
-	npm run build
-	docker build -t re-chat .
+# ---------------------------------------
+# Build Docker images
+# ---------------------------------------
+build: ## Build frontend and backend Docker images
+	@echo "Building frontend Docker image..."
+	docker build -t re-chat-frontend ./frontend
+	@echo "Building backend Docker image..."
+	docker build -t re-chat-backend ./backend
 
-docker-start: ## start Docker container locally
-	docker run -p 3000:80 --rm --name re-chat re-chat
-
-docker-stop: ## Stop and remove Docker container
-	docker stop re-chat || true
-	docker rm re-chat || true
-
-# Docker Compose commands
+# ---------------------------------------
+# Docker Compose
+# ---------------------------------------
 up: ## Start services with docker-compose
 	docker compose up -d
-	@echo "connect to http://localhost:3000 to access re-chat."
-	@echo "starting... Use 'make logs' to view logs."
+	@echo "Connect to http://localhost:3000"
+	@echo "Use 'make logs' to view logs"
 
-down: ## Stop services with docker-compose
+down: ## Stop services
 	docker compose down
-
-logs: ## Show logs from docker-compose services
-	docker compose logs -f
 
 restart: ## Restart services
 	docker compose restart
 
+logs: ## Tail logs for all services
+	docker compose logs -f
+
+# ---------------------------------------
 # Cleanup
+# ---------------------------------------
 clean: ## Remove build artifacts and containers
-	rm -rf dist/
-	rm -rf node_modules/
+	@echo "Cleaning frontend build artifacts..."
+	rm -rf frontend/dist/
+	rm -rf frontend/node_modules/
+	@echo "Cleaning backend artifacts..."
+	find backend -type d -name '__pycache__' -exec rm -rf {} +
 	docker compose down -v --remove-orphans
 	docker system prune -f
 
-# Full production build
-prod: install build ## Build app and Docker image for production
+# ---------------------------------------
+# Linting & Testing
+# ---------------------------------------
+lint: ## Run ESLint on frontend
+	cd frontend && npm run lint
 
-# Lint and test
-lint: ## Run ESLint
-	npm run lint
+test: ## Run tests
+	@echo "Running frontend tests..."
+	cd frontend && npm test || echo "No frontend tests defined"
+	@echo "Running backend tests..."
+	cd backend && pytest || echo "No backend tests defined"
 
-test: ## Run tests (if any)
-	npm test || echo "No tests defined"
-
-# Install dependencies
-install: ## Install npm dependencies
-	npm install
-
-# Preview production build
-preview: ## Preview production build locally
-	npm run preview
+# ---------------------------------------
+# Production preview
+# ---------------------------------------
+preview: ## Preview production frontend build locally
+	cd frontend && npm run preview

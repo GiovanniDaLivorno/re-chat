@@ -2,6 +2,11 @@
 
 Simple frontend to LLM for learning. Built using npm, Vite, React, Nginx, Docker, Ollama.
 
+## TODO list
+- improve backend to manage multiple AI providers at same time
+- add clear chat button in the GUI
+- test with DeepSeek
+
 ## Development
 
 0. **Prerequisites**

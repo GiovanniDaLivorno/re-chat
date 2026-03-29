@@ -1,8 +1,18 @@
-### Giovanni
-
 services:
   web:
-    build: .
+    build:
+      context: ./frontend
     ports:
-      - "3000:80"    # host 3000 → container 80
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+    expose:
+      - "3000"
+    env_file:
+      - ./backend/.env
     restart: unless-stopped

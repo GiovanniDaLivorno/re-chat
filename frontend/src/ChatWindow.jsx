@@ -1,37 +1,33 @@
 import { useState, useRef, useEffect } from 'react';
-import './ChatWindow.css';
+import ChatHeader from './ChatHeader';
+import { PROVIDERS } from './aiProviders';
 import SettingsPanel from './SettingsPanel';
-import ChatHeader from './ChatHeader';  // <-- new import
+import './ChatWindow.css';
 
 export default function ChatWindow() {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
-  const [loading, setLoading] = useState(false);
+  const provider = PROVIDERS.ollama; // Change this to switch providers
+  const [connectionStatus, setConnectionStatus] = useState('checking');
   const [model, setModel] = useState('no model available');
   const [availableModels, setAvailableModels] = useState([]);
-  const [connectionStatus, setConnectionStatus] = useState('checking');
-  const [systemPrompt, setSystemPrompt] = useState('');
   const [temperature, setTemperature] = useState(0.7);
+  const [systemPrompt, setSystemPrompt] = useState('');
+  const [messages, setMessages] = useState([]);
   const messagesEndRef = useRef(null);
+  const [input, setInput] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  // const [providerName, setProviderName] = useState('ollama');
-  // const provider = PROVIDERS[providerName];
-  
-  // on mount check connection
-  useEffect(() => {
+  useEffect(() => {   // on mount check connection
     checkConnection();
   }, []);
 
   const checkConnection = async () => {
     try {
       setConnectionStatus('checking');
-      const response = await fetch('http://localhost:11434/api/tags');
-      if (!response.ok) {
+      const models = await provider.listModels();
+      if (!models) {
         setConnectionStatus('error');
         return;
       }
-      const data = await response.json();
-      const models = data.models?.map((m) => m.name) || [];
       setAvailableModels(models);
       if (models.length > 0) {
         setModel(models[0]);
@@ -45,24 +41,7 @@ export default function ChatWindow() {
     }
   };
 
-
-// const checkConnection = async () => {
-//   try {
-//     setConnectionStatus('checking');
-//     const models = await provider.listModels();
-
-//     setAvailableModels(models);
-//     setModel(models[0] || '');
-//     setConnectionStatus('connected');
-//   } catch (err) {
-//     console.error(err);
-//     setConnectionStatus('error');
-//   }
-// };
-
-
-
-
+  // TODO: add GUI button to clear chat and confirm before clearing
   const handleClearChat = () => {
     const confirmed = window.confirm('Clear the current conversation?');
     if (!confirmed) return;
@@ -77,14 +56,16 @@ export default function ChatWindow() {
     scrollToBottom();
   }, [messages]);
 
+
+  // send message to the API and handle response
   const sendMessage = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
 
-    if (!model || model === 'no model available') {
+    if (!model || model === '') {
       const errorMessage = {
         role: 'error',
-        content: 'Error: no model selected. Please choose a model from the dropdown before sending.',
+        content: 'Error: no model selected or available.',
       };
       setMessages((prev) => [...prev, errorMessage]);
       return;
@@ -96,38 +77,23 @@ export default function ChatWindow() {
     setLoading(true);
 
     try {
-      console.log('Sending message to Ollama:', { model, message: input });
+      console.log('Sending message to AI provider:', { model, message: input });
+
       const messagesToSend = systemPrompt.trim()
         ? [{ role: 'system', content: systemPrompt }, ...messages, userMessage]
         : [...messages, userMessage];
-      const response = await fetch('http://localhost:11434/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: model,
-          messages: messagesToSend,
-          stream: false,
-          options: {
-            temperature: temperature,
-          },
-        }),
+
+      const response = await provider.sendChat({
+        model,
+        messages: messagesToSend,
+        temperature,
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Ollama API error:', { status: response.status, body: errorText });
-        throw new Error(
-          `HTTP error! status: ${response.status}. Make sure Ollama is running and the model "${model}" is available.`
-        );
-      }
-
-      const data = await response.json();
       const assistantMessage = {
         role: 'assistant',
-        content: data.message.content,
+        content: response.message.content,
       };
+
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
       const errorMessage = {
