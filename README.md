@@ -1,32 +1,14 @@
 # re-chat
 
-Simple frontend to LLM for learning. Built using npm, Vite, React, Nginx, Docker, Ollama.
+Simple application for connecting to LLM providers, built for  learning. 
+Built using npm, Vite, React, Nginx, Docker, Ollama.
 
 ## TODO list
 - improve backend to manage multiple AI providers at same time
-- add clear chat button in the GUI
+- frontend: add clear chat button in the main window
 - test with DeepSeek
 
-## Development
-
-0. **Prerequisites**
-- Node.js 20+
-- Docker & Docker Compose
-- Make (only if you plan to use make commands)
-
-1. **Install dependencies**
-   ```bash
-   npm install
-   ```
-   run `npm audit fix` if there are critical vulnerabilities
-
-2. **Start development server**
-   ```bash
-   npm run dev
-   ```
-   connect to ```http://localhost:5173/```
-
-3. **configure an AI provider**
+1. **configure an AI provider**
 
    **local Ollama**
    ```bash
@@ -44,29 +26,24 @@ Simple frontend to LLM for learning. Built using npm, Vite, React, Nginx, Docker
 
 ## Production
 
-### Manual build
-```bash
-# Build app
-npm run build
+- create the frontend and backend containers as per instructions in their folders
 
-# Build Docker image
-docker build -t rechat .
+- start them and stich together
 
-### aubuild
+ ```bash
+  # create a network for the containers
+  docker network create nai
 
+  # statrt the backend
+  docker run -d --name rc-be --network nai -p 1000:1000 re-chat-be
 
-# Run the application
-docker run --rm -p 3000:80 rechat
-# or
-make docker-start
+  # start the rontend (Nginx)
+  docker run -d --name rc-wfe --network nai -p 3000:80 re-chat-wfe
+
+  # connect already running LLM container (molly) to same network
+  docker network connect nai molly
 ```
 
-### Docker Compose build
-```bash
-docker-compose up --build
-# or
-make up
-```
 
 ## Automation & CI/CD
 

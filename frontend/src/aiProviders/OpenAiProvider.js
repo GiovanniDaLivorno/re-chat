@@ -1,9 +1,11 @@
 import { BaseProvider } from './BaseProvider';
 
-// ollamaProvider for local development with Ollama's API
-export class OllamaProvider extends BaseProvider {
-  baseUrl = '/api'; // backend base URL
+export class OpenAiProvider extends BaseProvider {
+  baseUrl = '/api'; // points to your backend
 
+  /**
+   * returns available models
+   */
   async listModels() {
     const res = await fetch(`${this.baseUrl}/models`);
 
@@ -16,6 +18,13 @@ export class OllamaProvider extends BaseProvider {
     return data.models || [];
   }
 
+  /**
+   * Send chat messages to backend, backend proxies them to OpenAI
+   * @param {Object} params
+   * @param {string} params.model - model name
+   * @param {Array} params.messages - array of messages { role, content }
+   * @param {number} params.temperature - optional temperature
+   */
   async sendChat({ model, messages, temperature }) {
     const res = await fetch(`${this.baseUrl}/chat`, {
       method: 'POST',
@@ -29,7 +38,10 @@ export class OllamaProvider extends BaseProvider {
     }
 
     const data = await res.json();
+
+    // Return normalized response
     return data;
-    // or: return data.message?.content;
+    // Or if your UI expects a string:
+    // return data.message?.content;
   }
 }

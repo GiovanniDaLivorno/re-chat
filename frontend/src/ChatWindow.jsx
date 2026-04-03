@@ -5,7 +5,8 @@ import SettingsPanel from './SettingsPanel';
 import './ChatWindow.css';
 
 export default function ChatWindow() {
-  const provider = PROVIDERS.ollama; // Change this to switch providers
+  const [providerName, setProviderName] = useState('Ollama'); // default
+  const provider = PROVIDERS[providerName.toLowerCase()];
   const [connectionStatus, setConnectionStatus] = useState('checking');
   const [model, setModel] = useState('no model available');
   const [availableModels, setAvailableModels] = useState([]);
@@ -19,6 +20,27 @@ export default function ChatWindow() {
   useEffect(() => {   // on mount check connection
     checkConnection();
   }, []);
+
+  useEffect(() => {   // when user switches provider, need to refresh the models for that provider
+    if (!provider) return;
+
+    const fetchModels = async () => {
+      try {
+        setConnectionStatus('checking');
+        const models = await provider.listModels();
+        setAvailableModels(models);
+        setModel(models[0] || '');
+        setConnectionStatus('connected');
+      } catch (err) {
+        console.error('Connection error:', err);
+        setAvailableModels([]);
+        setModel('');
+        setConnectionStatus('error');
+      }
+    };
+
+    fetchModels();
+  }, [provider]);
 
   const checkConnection = async () => {
     try {
@@ -36,7 +58,7 @@ export default function ChatWindow() {
       }
       setConnectionStatus('connected');
     } catch (error) {
-      console.error('Connection error:', error);
+      // console.error('Connection error:', error);
       setConnectionStatus('error');
     }
   };
@@ -110,11 +132,15 @@ export default function ChatWindow() {
   return (
     <div className="chat-window">
       <ChatHeader
+        availableProviders={['Ollama', 'DeepSeek', 'OpenAI']}
+        provider={providerName}
         connectionStatus={connectionStatus}
         model={model}
         availableModels={availableModels}
         loading={loading}
         onModelChange={(e) => setModel(e.target.value)}
+        onProviderChange={(e) => setProviderName(e.target.value)}
+        // onRefresh={refreshModels} // was check connection, but we can add  a separate refresh button in the UI to refresh models without checking connection again
         onRefresh={checkConnection}
       />
 

@@ -3,32 +3,41 @@
 import { BaseProvider } from './BaseProvider';
 
 export class DeepSeekProvider extends BaseProvider {
-  
-  baseUrl = 'https://api.deepseek.com/v1';
+  baseUrl = '/api';
 
-  // optional: hardcode or fetch if API supports it
   async listModels() {
-    return ['deepseek-chat'];
+    const res = await fetch(`${this.baseUrl}/models`);
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`Failed to fetch models: ${res.status} ${text}`);
+    }
+
+    const data = await res.json();
+    return data.models || [];
   }
 
-  // For development, this sends the request to our backend which should proxy it to DeepSeek with the API key
   async sendChat({ model, messages, temperature }) {
-    const res = await fetch('/api/chat', {
+    const res = await fetch(`${this.baseUrl}/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'deepseek-chat',
+        model,
         messages,
         temperature,
       }),
     });
 
     if (!res.ok) {
-      const data = await res.json();
-      throw new Error(`DeepSeek error: ${res.status} ${data.error || 'Unknown error'}`);
+      const text = await res.text();
+      throw new Error(`Backend error: ${res.status} ${text}`);
     }
 
     const data = await res.json();
-    return data.choices[0].message.content;
+
+    // Normalize response shape (important!)
+    return data;
+    // or if your UI expects string:
+    // return data.message?.content;
   }
 }

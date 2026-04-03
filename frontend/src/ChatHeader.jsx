@@ -1,10 +1,13 @@
-import './ChatHeader.css';  
+import './ChatHeader.css';
 
 const ChatHeader = ({
   connectionStatus,
+  provider,
+  availableProviders,
   model,
   availableModels,
   loading,
+  onProviderChange,
   onModelChange,
   onRefresh,
 }) => {
@@ -19,7 +22,30 @@ const ChatHeader = ({
           {connectionStatus === 'error' && 'Not Connected'}
         </div>
       </div>
+
       <div className="model-selector">
+        {/* Provider selector */}
+        <label htmlFor="provider">Provider: </label>
+        <select
+          id="provider"
+          value={provider}
+          onChange={onProviderChange}
+          disabled={loading || connectionStatus !== 'connected' || availableProviders.length === 0}
+        >
+          {connectionStatus === 'connected' && availableProviders.length > 0 ? (
+            availableProviders.map((p) => (
+              <option key={p} value={p}>
+                {p}
+              </option>
+            ))
+          ) : (
+            <option value="" disabled>
+              {connectionStatus === 'connected' ? 'no providers available' : 'loading...'}
+            </option>
+          )}
+        </select>
+
+        {/* Model selector */}
         <label htmlFor="model">Model: </label>
         <select
           id="model"
@@ -39,6 +65,8 @@ const ChatHeader = ({
             </option>
           )}
         </select>
+
+        {/* Refresh button */}
         <button onClick={onRefresh} disabled={loading} className="refresh-btn">
           ↻
         </button>

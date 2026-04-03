@@ -1,18 +1,66 @@
 services:
-  web:
-    build:
-      context: ./frontend
-    ports:
-      - "3000:80"
-    depends_on:
-      - backend
-    restart: unless-stopped
-
-  backend:
+  rc-be:
     build:
       context: ./backend
-    expose:
-      - "3000"
-    env_file:
-      - ./backend/.env
+    container_name: rc-be
     restart: unless-stopped
+    networks:
+      - nai
+    expose:
+      - "1000"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=1000
+      - OLLAMA_BASE_URL=http://molly:11434
+
+  rc-wfe:
+    build:
+      context: ./frontend
+    container_name: rc-wfe
+    restart: unless-stopped
+    depends_on:
+      - rc-be
+    ports:
+      - "3000:80"
+    networks:
+      - nai
+
+networks:
+  nai:
+    external: true
+
+# Alternative using pre-built images, uncomment below and comment out the build sections above. 
+# Remember to build the images first using `docker build` commands.
+# services:
+#   rc-be:
+#     image: re-chat-be
+#     container_name: rc-be
+#     restart: unless-stopped
+#     ports:
+#       - "1000:1000"
+#     networks:
+#       - nai
+#     environment:
+#       - HOST=0.0.0.0
+#       - PORT=1000
+#       # optional: point to molly if needed
+#       - OLLAMA_BASE_URL=http://molly:11434
+
+#   rc-wfe:
+#     image: re-chat-wfe
+#     container_name: rc-wfe
+#     restart: unless-stopped
+#     ports:
+#       - "3000:80"
+#     depends_on:
+#       - rc-be
+#     networks:
+#       - nai
+#     volumes:
+#       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+
+# networks:
+#   nai:
+#     external: true
+
+
