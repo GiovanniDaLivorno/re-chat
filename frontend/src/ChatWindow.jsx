@@ -43,6 +43,13 @@ export default function ChatWindow() {
   }, [provider]);
 
   const checkConnection = async () => {
+    if (!provider) {
+      setConnectionStatus('error');
+      setAvailableModels([]);
+      setModel('');
+      return;
+    }
+
     try {
       setConnectionStatus('checking');
       const models = await provider.listModels();

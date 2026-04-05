@@ -8,6 +8,7 @@ class OllamaAsyncProvider(BaseProvider):
         self.client = httpx.AsyncClient(timeout=timeout)
 
     # Returns a list of available models from Ollama
+    # some Ollama versions use /api/tags instead of /api/models
     async def list_models(self) -> List[str]:
         url = f"{self.base_url}/api/tags"
         try:

@@ -3,8 +3,28 @@
 Simple application for connecting to LLM providers, built for  learning. 
 Built using npm, Vite, React, Nginx, Docker, Ollama.
 
+## Quick start
+
+Following tools should be available:
+- make: `sudo apt install make`
+- frontend: `nodejs`, `npm`
+- python3: already present in most Linux distros
+- python3 virtual environment: `sudo apt install python3.13-venv`
+
+From project root run the following commands:
+```
+make setup
+make dev
+```
+
+The `setup` target installs frontend packages and creates a backend virtual environment in `backend/venv`.
+
+During development:
+- frontend runs on `http://localhost:5173/`
+- backend runs on `http://localhost:8000`
+
+
 ## TODO list
-- improve backend to manage multiple AI providers at same time
 - frontend: add clear chat button in the main window
 - test with DeepSeek
 
@@ -80,6 +100,3 @@ If you want to publish on Docker Hub, add these to your GitHub repository secret
 - **Container**: Multi-stage Docker build for optimized images
 - **LLM**: Ollama API integration for local AI models
 
-## Useful commands
-
-Use `make` command from project root
