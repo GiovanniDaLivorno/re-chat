@@ -1,4 +1,15 @@
 services:
+  molly:
+    image: molly:latest
+    container_name: molly
+    restart: unless-stopped
+    networks:
+      - nai
+    expose:
+      - "11434"
+    volumes:
+      - ollama:/root/.ollama
+
   rc-be:
     build:
       context: ./backend
@@ -32,6 +43,9 @@ services:
 networks:
   nai:
     # external: true
+
+volumes:
+  ollama:
 
 # Alternative using pre-built images, uncomment below and comment out the build sections above. 
 # Remember to build the images first using `docker build` commands.

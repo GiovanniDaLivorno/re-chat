@@ -56,13 +56,18 @@ setup: ## Check and install required dependencies
 # Development
 # ---------------------------------------
 dev: ## Run frontend + backend in development mode
+	@echo "Starting molly (Molly)..."
+	docker run -d --name molly-dev -p 11434:11434 molly:latest
 	@echo "Starting frontend and backend in dev mode..."
 	@echo "- Frontend (Vite React) on http://localhost:5173/"
 	@echo "- Backend (FastAPI) on http://localhost:8000"
+	@echo "- Molly on http://localhost:11434"
 	@echo "Press Ctrl+C to stop both servers"
 	(cd frontend && npm run dev) & \
-	sleep 2 && (cd backend && . venv/bin/activate && APP_PORT=8000 HOST=localhost uvicorn main:app --reload --host 0.0.0.0 --port 8000) & \
+	sleep 2 && (cd backend && . venv/bin/activate && OLLAMA_BASE_URL=http://localhost:11434 APP_PORT=8000 HOST=localhost uvicorn main:app --reload --host 0.0.0.0 --port 8000) & \
 	wait
+	@echo "Stopping molly..."
+	docker stop molly-dev && docker rm molly-dev
 
 # ---------------------------------------
 # Build Docker images
@@ -77,7 +82,7 @@ build: ## Build frontend and backend Docker images
 # Docker Compose
 # ---------------------------------------
 up: ## Start services with docker-compose
-	docker compose up -d
+	docker compose up -d --build
 	@echo "Connect to http://localhost:3000"
 	@echo "Use 'make logs' to view logs"
 
