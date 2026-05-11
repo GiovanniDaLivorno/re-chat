@@ -6,13 +6,15 @@ Built for learning, it use using npm, Vite, React, Docker, Ollama.
 ## Quick start
 
 Following tools should be available:
+
 - make: `sudo apt install make`
 - frontend: `nodejs`, `npm`
 - python3: already present in most Linux distros
 - python3 virtual environment: `sudo apt install python3.13-venv`
 
 From project root run the following commands:
-```
+
+``` bash
 make setup
 make dev
 ```
@@ -20,17 +22,19 @@ make dev
 The `setup` target installs frontend packages and creates a backend virtual environment in `backend/venv`.
 
 During development:
+
 - frontend runs on `http://localhost:5173/`
 - backend runs on `http://localhost:8000`
 
-
 ## TODO list
+
 - frontend: add clear chat button in the main window
 - test with DeepSeek
 
 1. **configure an AI provider**
 
    **local Ollama**
+
    ```bash
    docker run -d -v ollama:/root/.ollama -p 11434:11434 --name molly ollama/ollama
    # then load a model
@@ -40,7 +44,8 @@ During development:
    docker exec -it molly ollama pull qwen2.5-coder:0.5b
    ```
    **or your favorite AI provider**
-   ```
+
+   ```bash
    lore ipsum
    ```
 
@@ -81,9 +86,9 @@ The `.github/workflows/ci-cd.yml` provides:
 ### Required Secrets
 
 If you want to publish on Docker Hub, add these to your GitHub repository secrets:
+
 - `DOCKERHUB_USERNAME`: Your Docker Hub username
 - `DOCKERHUB_TOKEN`: Your Docker Hub access token
-
 
 ### CI/CD Flow
 
@@ -99,4 +104,3 @@ If you want to publish on Docker Hub, add these to your GitHub repository secret
 - **Production**: serving static assets with 'serve (temporary)'
 - **Container**: Multi-stage Docker build for optimized images
 - **LLM**: Ollama API integration for local AI models
-
