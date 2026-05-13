@@ -1,7 +1,7 @@
 # re-chat
 
 Simple application for connecting to LLM providers, built for  learning. 
-Built using npm, Vite, React, Nginx, Docker, Ollama.
+Built using npm, Vite, React, Docker, Ollama.
 
 ## TODO list
 - improve backend to manage multiple AI providers at same time
@@ -34,11 +34,11 @@ Built using npm, Vite, React, Nginx, Docker, Ollama.
   # create a network for the containers
   docker network create nai
 
-  # statrt the backend
+  # start the backend
   docker run -d --name rc-be --network nai -p 1000:1000 re-chat-be
 
-  # start the rontend (Nginx)
-  docker run -d --name rc-wfe --network nai -p 3000:80 re-chat-wfe
+  # start the frontend
+  docker run -d --name rc-wfe --network nai -p 80:80 re-chat-wfe
 
   # connect already running LLM container (molly) to same network
   docker network connect nai molly
@@ -76,7 +76,7 @@ If you want to publish on Docker Hub, add these to your GitHub repository secret
 ## Architecture
 
 - **Frontend**: React + Vite (ES modules, fast HMR)
-- **Production**: Nginx serving static assets
+- **Production**: serving static assets with 'serve (temporary)'
 - **Container**: Multi-stage Docker build for optimized images
 - **LLM**: Ollama API integration for local AI models
 

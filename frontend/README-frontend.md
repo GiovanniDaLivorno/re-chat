@@ -1,6 +1,6 @@
 # re-chat frontend
 
-Simple frontend to LLM for learning. Built using npm, Vite, React, Nginx, Docker.
+Simple frontend to LLM for learning. Built using npm, Vite, React, Docker.
 
 ## TODO list
 - add clear chat button in the GUI

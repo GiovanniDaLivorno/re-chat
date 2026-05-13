@@ -13,19 +13,16 @@ COPY . .
 RUN npm run build    # generates /app/dist
 
 # 2️⃣ Production stage
-FROM nginx:alpine
+FROM node:20-alpine
 
-# Remove default Nginx content
-RUN rm -rf /usr/share/nginx/html/*
+# Install serve to serve the static files
+RUN npm install -g serve
 
 # Copy built frontend assets
-COPY --from=build /app/dist /usr/share/nginx/html
-
-# Copy custom Nginx config (for SPA + API proxy)
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /app/dist
 
 # Expose port 80
 EXPOSE 80
 
-# Start Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Start the server
+CMD ["serve", "-s", "/app/dist", "-l", "80"]
