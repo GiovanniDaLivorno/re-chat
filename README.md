@@ -12,7 +12,7 @@ install following tools:
 - python3: already present in most Linux distros
 - python3 virtual environment: `sudo apt install python3.13-venv`
 
-Then from project root run the following commands:
+Then clone clone this repo and from project root run:
 
 ``` bash
 make setup
