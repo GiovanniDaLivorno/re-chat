@@ -57,7 +57,11 @@ setup: ## Check and install required dependencies
 # ---------------------------------------
 dev: ## Run frontend + backend in development mode
 	@echo "Starting molly (Molly)..."
-	docker run -d --name molly-dev -p 11434:11434 molly:latest
+	@if [ "$$(docker ps -aq -f name=molly-dev)" ]; then \
+		echo "Removing existing molly-dev container..."; \
+		docker rm -f molly-dev; \
+	fi
+	docker run -d --name molly-dev -p 11434:11434 molly-qwen-amd:latest
 	@echo "Starting frontend and backend in dev mode..."
 	@echo "- Frontend (Vite React) on http://localhost:5173/"
 	@echo "- Backend (FastAPI) on http://localhost:8000"

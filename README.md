@@ -3,25 +3,32 @@
 Simple application for connecting to different AI providers.
 Built for learning, it use using npm, Vite, React, Docker, Ollama.
 
-## Quick start
+## setup
 
-Following tools should be available:
+install following tools:
 
 - make: `sudo apt install make`
-- frontend: `nodejs`, `npm`
+- node: `nodejs`, `npm`
 - python3: already present in most Linux distros
 - python3 virtual environment: `sudo apt install python3.13-venv`
 
-From project root run the following commands:
+Then from project root run the following commands:
 
 ``` bash
 make setup
-make dev
 ```
 
 The `setup` target installs frontend packages and creates a backend virtual environment in `backend/venv`.
 
-During development:
+## development
+
+to start running re-chat development version
+
+``` bash
+make dev
+```
+
+note that:
 
 - frontend runs on `http://localhost:5173/`
 - backend runs on `http://localhost:8000`
@@ -73,7 +80,7 @@ During development:
 ## Automation & CI/CD
 
 This project includes a CI/CD pipelines for production artifact creation and Docker container builds.
-Note that I have limited the pipeline to manual trigger only. add Push to main/master branches for full automation.
+Note that I have intentionally limited the pipeline to manual trigger only. add Push to main/master branches for full automation.
 
 ### GitHub Actions Workflow
 
