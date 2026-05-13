@@ -1,7 +1,7 @@
 # re-chat
 
-Simple application for connecting to LLM providers, built for  learning. 
-Built using npm, Vite, React, Docker, Ollama.
+Simple application for connecting to different AI providers.
+Built for learning, it use using npm, Vite, React, Docker, Ollama.
 
 ## Quick start
 
