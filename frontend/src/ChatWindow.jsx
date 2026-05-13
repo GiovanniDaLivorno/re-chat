@@ -43,6 +43,13 @@ export default function ChatWindow() {
   }, [provider]);
 
   const checkConnection = async () => {
+    if (!provider) {
+      setConnectionStatus('error');
+      setAvailableModels([]);
+      setModel('');
+      return;
+    }
+
     try {
       setConnectionStatus('checking');
       const models = await provider.listModels();
@@ -111,9 +118,16 @@ export default function ChatWindow() {
         temperature,
       });
 
+      const content =
+        response.message?.content ||
+        response.choices?.[0]?.message?.content ||
+        response.content ||
+        response.text ||
+        JSON.stringify(response);
+
       const assistantMessage = {
         role: 'assistant',
-        content: response.message.content,
+        content: typeof content === 'string' ? content : JSON.stringify(content),
       };
 
       setMessages((prev) => [...prev, assistantMessage]);

@@ -1,14 +1,18 @@
-import logging, os
+import logging
+import os
 from typing import List, Dict, Any
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from contextlib import asynccontextmanager
+from dotenv import load_dotenv
 
 from aiProviders.OllamaProvider import OllamaAsyncProvider
 
 # Load environment variables from .env file
+load_dotenv()
 BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 PORT = int(os.getenv("APP_PORT", 3000))
+HOST = os.getenv("HOST", "0.0.0.0")
 
 # # Logging Configuration
 logging.basicConfig(level=logging.INFO)
@@ -19,9 +23,6 @@ class ChatRequest(BaseModel):
     model: str
     messages: List[Dict[str, Any]]
     temperature: float = 0.7
-
-class ChatResponse(BaseModel):
-    response: Any
 
 class ModelListResponse(BaseModel):
     models: List[str]
@@ -55,7 +56,7 @@ async def list_models():
         raise HTTPException(status_code=500, detail=str(e))
 
 # API endpoint for sending a chat message
-@app.post("/api/chat", response_model=ChatResponse, responses={500: {"model": ErrorResponse}})
+@app.post("/api/chat", responses={500: {"model": ErrorResponse}})
 async def chat(request_data: ChatRequest):
     try:
         response = await app.state.ollama.send_chat(
@@ -63,7 +64,19 @@ async def chat(request_data: ChatRequest):
             messages=request_data.messages,
             temperature=request_data.temperature
         )
-        return {"response": response}
+        return response
     except Exception as e:  # all exceptions return a 500 error response
         logger.error(f"Error in chat: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(
+        "main:app",
+        host=HOST,
+        port=PORT,
+        log_level="info",
+        workers=1,
+    )

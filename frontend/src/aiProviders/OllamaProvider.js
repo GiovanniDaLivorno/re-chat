@@ -30,6 +30,5 @@ export class OllamaProvider extends BaseProvider {
 
     const data = await res.json();
     return data;
-    // or: return data.message?.content;
   }
 }

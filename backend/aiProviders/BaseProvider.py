@@ -11,3 +11,8 @@ class BaseProvider(ABC):
     async def send_chat(self, model: str, messages: List[Dict[str, Any]], temperature: float) -> Dict[str, Any]:
         """Send a chat request to the provider and return the response"""
         pass
+
+    @abstractmethod
+    async def close(self):
+        """Close any resources if necessary"""
+        pass

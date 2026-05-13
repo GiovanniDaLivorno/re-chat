@@ -1,7 +1,18 @@
 services:
-  be: # backend service
+  molly:
+    image: molly:latest
+    container_name: molly
+    restart: unless-stopped
+    networks:
+      - nai
+    expose:
+      - "11434"
+    volumes:
+      - ollama:/root/.ollama
+
+  rc-be:
     build:
-    context: ./backend
+      context: ./backend
     container_name: be
     restart: unless-stopped
     ports:
@@ -10,6 +21,10 @@ services:
       - HOST=0.0.0.0
       - PORT=1000
       - OLLAMA_BASE_URL=http://molly:11434
+    command:
+      - sh
+      - -c
+      - uvicorn main:app --host ${HOST:-0.0.0.0} --port ${PORT:-1000} --workers 4
     networks:
       - nai
 
@@ -27,5 +42,8 @@ services:
 
 networks:
   nai:
-    external: true
+    # external: true
+
+volumes:
+  ollama:
 

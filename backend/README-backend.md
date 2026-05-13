@@ -28,6 +28,6 @@ remember to adapt .env to your environment values
   ```
 
 - run it
-  ```
+  ```bash
   docker run -p 1000:1000 --env-file .env --name rc-be re-chat-be
   ```
