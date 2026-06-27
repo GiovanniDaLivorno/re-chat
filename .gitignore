@@ -25,6 +25,7 @@ __pycache__/
 *.pyd
 venv/
 .env               # backend secrets
+backend/.env
 *.sqlite3          # if using local DB
 
 # ======================

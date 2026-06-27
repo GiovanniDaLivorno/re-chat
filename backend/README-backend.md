@@ -18,7 +18,7 @@ remember to adapt .env to your environment values
 
 2. **Start the backend server**
   ```bash
-  uvicorn main:app --reload --port 1000
+  uvicorn main:app --reload --port 8000
   ```
 
 ## Production
@@ -29,5 +29,5 @@ remember to adapt .env to your environment values
 
 - run it
   ```bash
-  docker run -p 1000:1000 --env-file .env --name rc-be re-chat-be
+  docker run -p 8000:8000 --env-file .env --name be re-chat-be
   ```
