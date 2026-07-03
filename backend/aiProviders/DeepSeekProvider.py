@@ -1,5 +1,4 @@
 import httpx
-import os
 from typing import List, Dict, Any
 from .BaseProvider import BaseProvider
 
@@ -7,16 +6,13 @@ class DeepSeekAsyncProvider(BaseProvider):
     """DeepSeek API provider for chat completions"""
     
     def __init__(self, api_key: str = None, timeout: float = 30.0):
-        self.api_key = api_key or os.getenv("DEEPSEEK_API_KEY")
+        self.api_key = api_key 
         if not self.api_key:
-            raise ValueError("DEEPSEEK_API_KEY environment variable is not set")
+            raise ValueError("DEEPSEEK_API_KEY is not set")
         
         self.base_url = "https://api.deepseek.com"
         self.client = httpx.AsyncClient(timeout=timeout)
-        self.default_models = [
-            "deepseek-chat",
-            "deepseek-coder",
-        ]
+        self.default_models = [ "deepseek-chat", "deepseek-coder"]
 
     async def list_models(self) -> List[str]:
         """Return a list of available DeepSeek models"""
@@ -47,21 +43,7 @@ class DeepSeekAsyncProvider(BaseProvider):
             res = await self.client.post(url, json=payload, headers=headers)
             res.raise_for_status()
             data = res.json()
-            
-            # Normalize response to match expected format
-            if isinstance(data, dict):
-                # DeepSeek returns in OpenAI format with choices
-                choices = data.get("choices", [])
-                if choices and isinstance(choices, list) and len(choices) > 0:
-                    first_choice = choices[0]
-                    message = first_choice.get("message")
-                    if isinstance(message, dict):
-                        return {"message": message}
-                
-                # Fallback to raw response
-                return {"message": {"role": "assistant", "content": str(data)}}
-            
-            return {"message": {"role": "assistant", "content": str(data)}}
+            return self.normalize_response(data)
         except httpx.HTTPError as e:
             raise Exception(f"DeepSeek API error: {e}")
 

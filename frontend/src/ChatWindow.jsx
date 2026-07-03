@@ -4,9 +4,13 @@ import { PROVIDERS } from './aiProviders';
 import SettingsPanel from './SettingsPanel';
 import './ChatWindow.css';
 
+const DEFAULT_PROVIDER = 'ollama';
+
+const normalizeProviderName = (provider = '') => provider.toLowerCase().trim() || DEFAULT_PROVIDER;
+
 export default function ChatWindow() {
-  const [providerName, setProviderName] = useState('Ollama'); // default
-  const provider = PROVIDERS[providerName.toLowerCase()];
+  const [providerName, setProviderName] = useState(DEFAULT_PROVIDER);
+  const provider = PROVIDERS[normalizeProviderName(providerName)];
   const [connectionStatus, setConnectionStatus] = useState('checking');
   const [model, setModel] = useState('no model available');
   const [availableModels, setAvailableModels] = useState([]);
@@ -17,8 +21,23 @@ export default function ChatWindow() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {   // on mount check connection
-    checkConnection();
+  useEffect(() => {
+    const initializeProvider = async () => {
+      try {
+        const response = await fetch('/api/provider');
+        if (!response.ok) {
+          throw new Error(`Failed to load provider: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setProviderName(normalizeProviderName(data.provider));
+      } catch (error) {
+        console.error('Failed to initialize provider:', error);
+        setProviderName(DEFAULT_PROVIDER);
+      }
+    };
+
+    initializeProvider();
   }, []);
 
   useEffect(() => {   // when user switches provider, need to refresh the models for that provider
@@ -65,7 +84,30 @@ export default function ChatWindow() {
       }
       setConnectionStatus('connected');
     } catch (error) {
-      // console.error('Connection error:', error);
+      setConnectionStatus('error');
+    }
+  };
+
+  const handleProviderChange = async (e) => {
+    const nextProvider = normalizeProviderName(e.target.value);
+    setProviderName(nextProvider);
+    setConnectionStatus('checking');
+
+    try {
+      const response = await fetch('/api/provider', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ provider: nextProvider }),
+      });
+
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+
+      const data = await response.json();
+      setProviderName(normalizeProviderName(data.provider));
+    } catch (error) {
+      console.error('Failed to switch provider:', error);
       setConnectionStatus('error');
     }
   };
@@ -146,14 +188,14 @@ export default function ChatWindow() {
   return (
     <div className="chat-window">
       <ChatHeader
-        availableProviders={['Ollama', 'DeepSeek', 'OpenAI']}
+        availableProviders={['ollama', 'deepseek']}
         provider={providerName}
         connectionStatus={connectionStatus}
         model={model}
         availableModels={availableModels}
         loading={loading}
         onModelChange={(e) => setModel(e.target.value)}
-        onProviderChange={(e) => setProviderName(e.target.value)}
+        onProviderChange={handleProviderChange}
         // onRefresh={refreshModels} // was check connection, but we can add  a separate refresh button in the UI to refresh models without checking connection again
         onRefresh={checkConnection}
       />

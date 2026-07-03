@@ -23,7 +23,7 @@ USER gio
 # Copy app code
 COPY . .
 
-EXPOSE 1000
+EXPOSE 3000
 
 # Use multiple workers in production
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "1000", "--workers", "4"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "3000", "--workers", "4"]

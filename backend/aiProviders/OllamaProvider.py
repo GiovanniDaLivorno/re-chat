@@ -3,8 +3,8 @@ from typing import List, Dict, Any
 from .BaseProvider import BaseProvider
 
 class OllamaAsyncProvider(BaseProvider):
-    def __init__(self, base_url: str = "http://localhost:11434", timeout: float = 10.0):
-        self.base_url = base_url
+    def __init__(self, timeout: float = 10.0):
+        self.base_url = "http://localhost:11434"
         self.client = httpx.AsyncClient(timeout=timeout)
 
     # Returns a list of available models from Ollama
@@ -32,24 +32,7 @@ class OllamaAsyncProvider(BaseProvider):
             res = await self.client.post(url, json=payload, headers={"Content-Type": "application/json"})
             res.raise_for_status()
             data = res.json()
-
-            if isinstance(data, dict):
-                if data.get("message") and isinstance(data["message"], dict):
-                    return {"message": data["message"]}
-
-                choices = data.get("choices")
-                if isinstance(choices, list) and len(choices) > 0:
-                    first_choice = choices[0]
-                    message = first_choice.get("message") or first_choice.get("content")
-                    if isinstance(message, dict):
-                        return {"message": message}
-                    if isinstance(message, str):
-                        return {"message": {"role": "assistant", "content": message}}
-
-                if data.get("content"):
-                    return {"message": {"role": "assistant", "content": data["content"]}}
-
-            return {"message": {"role": "assistant", "content": str(data)}}
+            return self.normalize_response(data)
         except httpx.HTTPError as e:
             raise Exception(f"Ollama error: {e}")
 

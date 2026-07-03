@@ -33,11 +33,14 @@ const ChatHeader = ({
           disabled={loading || connectionStatus !== 'connected' || availableProviders.length === 0}
         >
           {connectionStatus === 'connected' && availableProviders.length > 0 ? (
-            availableProviders.map((p) => (
-              <option key={p} value={p}>
-                {p}
-              </option>
-            ))
+            availableProviders.map((p) => {
+              const label = p.charAt(0).toUpperCase() + p.slice(1);
+              return (
+                <option key={p} value={p}>
+                  {label}
+                </option>
+              );
+            })
           ) : (
             <option value="" disabled>
               {connectionStatus === 'connected' ? 'no providers available' : 'loading...'}

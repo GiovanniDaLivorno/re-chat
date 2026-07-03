@@ -4,7 +4,14 @@ A ligth backend has been added to this project to
 - avoid storaging API keys in the frontend
 - abstracting AI provider API
 
-remember to adapt .env to your environment values
+remember to set your environment vars, e.g. in ```secret.env``` file
+```bash
+# export AI_PROVIDER=Ollama
+export AI_PROVIDER=DeepSeek
+
+# DeepSeek access key
+export DEEPSEEK_API_KEY=your_api_key
+```
 
 ## Development
 
@@ -29,5 +36,5 @@ remember to adapt .env to your environment values
 
 - run it
   ```bash
-  docker run -p 8000:8000 --env-file .env --name be re-chat-be
+  docker run -p 8000:7000 --env-file secret..env --name be re-chat-be
   ```
